@@ -10,7 +10,6 @@ class VersionCommand : Command(
 ) {
     override suspend fun execute(args: CommandArguments, sender: CommandSender, mirai: Mirai) {
         sender.reply {
-            println("Replying with $kMiraiVersion")
             raw(kMiraiVersion)
         }
     }

@@ -23,7 +23,6 @@ class UserSender(
     override fun reply(builder: Message.() -> Unit) {
         val msg = Message()
         msg.builder()
-        println("Replying @ ${channel} with ${msg.content}")
         channel.sendMessage(
             msg.content
         ).submit().join()
@@ -78,9 +77,7 @@ open class ScopedCommand(
             val m = found?.meta
             if (m != null) {
                 val transformedIndex = fArgs.indexOf(found.name)
-                println(transformedIndex)
                 val transformedParameters = fArgs.subList(transformedIndex + 1, fArgs.size)
-                println("New parameters are $transformedParameters")
                 m(CommandArguments(transformedParameters), sender, mirai)
                 return
             }

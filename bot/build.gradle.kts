@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version "1.3.50"
+    application
 }
 dependencies {
     api(kotlin("stdlib-jdk8"))
@@ -8,6 +9,9 @@ dependencies {
     api("net.dv8tion:JDA:4.0.0_54") {
         exclude(module = "opus-java")
     }
+}
+application {
+    mainClassName = "me.ddevil.mirai.MainKt"
 }
 
 repositories {

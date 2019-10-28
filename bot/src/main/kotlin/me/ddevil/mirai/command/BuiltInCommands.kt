@@ -8,7 +8,7 @@ class VersionCommand : Command(
     "Mostra a versão da Mirai",
     "/version"
 ) {
-    override suspend fun execute(args: CommandArguments, sender: CommandSender, mirai: Mirai) {
+    override suspend fun onExecute(args: CommandArguments, sender: CommandSender, mirai: Mirai) {
         sender.reply {
             raw(MiraiConstants.version)
         }
@@ -20,7 +20,7 @@ class ListCommandsCommand : Command(
     "Lista todos os comandos disponíveis",
     "/commands"
 ) {
-    override suspend fun execute(args: CommandArguments, sender: CommandSender, mirai: Mirai) {
+    override suspend fun onExecute(args: CommandArguments, sender: CommandSender, mirai: Mirai) {
         sender.reply {
             for (command in mirai.commandManager.commands) {
                 raw("**${command.name}**: ${command.description}")
@@ -36,7 +36,7 @@ class BotCommand : Command(
     "/bot",
     "mirai"
 ) {
-    override suspend fun execute(args: CommandArguments, sender: CommandSender, mirai: Mirai) {
+    override suspend fun onExecute(args: CommandArguments, sender: CommandSender, mirai: Mirai) {
         sender.reply {
             raw("Eu sou a Mirai!")
             raw("Eu que gerêncio o role pra não virar zorra")

@@ -6,6 +6,7 @@ import me.ddevil.mirai.mensaging.Message
 import me.ddevil.util.emptyString
 import me.ddevil.util.exception.ArgumentOutOfRangeException
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.entities.MessageEmbed
@@ -92,6 +93,7 @@ abstract class Command(
     vararg aliases: String
 ) : AbstractToggleable() {
     val aliases = aliases.toSet()
+    val permission get() = "command.$name"
     override suspend fun onInitialize() {
 
     }
@@ -99,7 +101,34 @@ abstract class Command(
     override suspend fun onTerminate() {
     }
 
-    abstract suspend fun execute(
+    suspend fun execute(
+        args: CommandArguments,
+        sender: CommandSender,
+        mirai: Mirai
+    ) {
+        if (!allowed(sender, mirai)) {
+            sender.reply {
+                markError()
+                title = "Sem permissão!"
+                raw("Você não tem permissão ($permission) para executar esse comando!")
+            }
+            return
+        }
+        onExecute(args, sender, mirai)
+    }
+
+    suspend fun allowed(sender: CommandSender, mirai: Mirai): Boolean {
+        if (sender is UserSender) {
+            val r = sender.user.roles
+            if (r.any { Permission.ADMINISTRATOR in it.permissions }) {
+                return true
+            }
+            return r.any { mirai.permissionManager.getGroup(it).test(permission) }
+        }
+        return false
+    }
+
+    protected abstract suspend fun onExecute(
         args: CommandArguments,
         sender: CommandSender,
         mirai: Mirai
@@ -117,13 +146,12 @@ open class ScopedCommand(
     usage: String,
     vararg aliases: String
 ) : Command(name, description, usage, *aliases) {
-
     val rootScope = Scope<SubCommand>(emptyString())
     fun register(subName: String, dispatcher: SubCommand) {
         rootScope.findChild(subName).meta = dispatcher
     }
 
-    override suspend fun execute(args: CommandArguments, sender: CommandSender, mirai: Mirai) {
+    override suspend fun onExecute(args: CommandArguments, sender: CommandSender, mirai: Mirai) {
         val fArgs = args.arguments
         val search = fArgs.toMutableList()
 

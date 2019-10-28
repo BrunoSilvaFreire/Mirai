@@ -39,4 +39,18 @@ private constructor(
         persistence.setScope(role.id, root)
     }
 
+    fun test(permission: String): Boolean {
+        val open = Scope.getParts(permission).toMutableList()
+        while (open.isNotEmpty()) {
+            val found = root.findNullableChild(open.toMutableList())
+            val g = found?.meta
+            if (found == null || g == null || g == Grant.IGNORE) {
+                open.removeAt(open.lastIndex)
+            } else {
+                return g == Grant.ALLOW
+            }
+        }
+        return false
+    }
+
 }

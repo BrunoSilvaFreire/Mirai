@@ -41,9 +41,17 @@ class Message(
 
     fun markdown(
         content: String,
-        bold: Boolean = false
+        bold: Boolean = false,
+        italic: Boolean = false
     ) {
-
+        var msg = content
+        if (bold) {
+            msg = "**$msg**"
+        }
+        if (italic){
+            msg = "*$msg*"
+        }
+        raw(msg)
     }
 
     fun isRich(): Boolean {

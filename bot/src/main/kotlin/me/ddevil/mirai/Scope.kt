@@ -34,7 +34,11 @@ data class Scope<M>(
     }
 
     fun findNullableChild(scope: String): Scope<M>? {
-        val parts = getParts(scope).toMutableList()
+        return findNullableChild(getParts(scope).toMutableList())
+
+    }
+
+    fun findNullableChild(parts: MutableList<String>): Scope<M>? {
         var current = this
         while (parts.isNotEmpty()) {
             val name = parts.first()

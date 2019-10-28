@@ -1,9 +1,10 @@
 package me.ddevil.mirai.command
 
-import jdk.nashorn.internal.runtime.regexp.joni.constants.Arguments
 import me.ddevil.mirai.Mirai
+import me.ddevil.mirai.mensaging.Message
 import me.ddevil.mirai.permission.Grant
 import me.ddevil.util.exception.ArgumentOutOfRangeException
+import net.dv8tion.jda.api.entities.TextChannel
 import java.awt.Color
 
 class PermissionCommand(val mirai: Mirai) :
@@ -13,6 +14,24 @@ class PermissionCommand(val mirai: Mirai) :
         "/perms (set, remove, list)",
         "perms"
     ) {
+
+
+    private fun Message.addRoles(sender: CommandSender) {
+        this.title = "Roles & Códigos"
+        var roles = mirai.jda.roles
+        if (sender is UserSender) {
+            val ch = sender.channel
+            if (ch is TextChannel) {
+                roles = roles.filter { it.guild == ch.guild }
+            }
+        }
+        for (role in roles) {
+            markdown("${role.name}:", bold = true)
+            raw(role.id)
+
+        }
+    }
+
     init {
 
         register("set") { args, sender: CommandSender, mirai: Mirai ->
@@ -46,10 +65,19 @@ class PermissionCommand(val mirai: Mirai) :
                         raw("Permissão $perm setada para $grant no grupo ${group.role.name}")
                     }
                 } catch (e: ArgumentOutOfRangeException) {
-
+                    sender.reply {
+                        markError()
+                        title = "Permissão faltante"
+                        markdown("Você deve informar uma permissão! Ex: !perms set (id) $permission")
+                    }
                 }
             } catch (e: ArgumentOutOfRangeException) {
-
+                sender.reply {
+                    markError()
+                    title = "Role faltante"
+                    markdown("Você deve informar o código de um Role!", bold = true)
+                    addRoles(sender)
+                }
             }
         }
     }

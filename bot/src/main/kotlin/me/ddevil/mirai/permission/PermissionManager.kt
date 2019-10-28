@@ -1,6 +1,7 @@
 package me.ddevil.mirai.permission
 
 import me.ddevil.mirai.Mirai
+import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Role
 
 class PermissionManager(
@@ -20,6 +21,7 @@ class PermissionManager(
             return@with loaded
         }
     }
+
 
     suspend fun getGroupById(role: Long): PermissionGroup? {
         return getGroup(mirai.jda.getRoleById(role) ?: return null)

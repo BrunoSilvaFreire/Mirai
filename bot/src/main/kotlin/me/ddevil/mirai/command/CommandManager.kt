@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.EventListener
 import org.slf4j.LoggerFactory
+import java.lang.Exception
 
 class CommandManager(
     val mirai: Mirai
@@ -28,16 +29,29 @@ class CommandManager(
             val cmdAlias = content.first()
             val cmd = findCommand(cmdAlias) ?: return
             val args = if (content.size == 1) {
-                emptyList()
+                emptyArray()
             } else {
-                content.subList(1, content.size)
+                content.slice(1 until content.size).toTypedArray()
             }
             GlobalScope.launch {
-                cmd.execute(
-                    CommandArguments(args),
-                    UserSender(m, ch),
-                    mirai
-                )
+                val sender = UserSender(m, ch)
+                try {
+                    cmd.execute(
+                        CommandArguments(args),
+                        sender,
+                        mirai
+                    )
+                } catch (e: Exception) {
+                    sender.reply {
+                        markError()
+                        title = e::class.java.simpleName
+
+                        e.message?.let {
+                            raw(it)
+                        }
+                    }
+                    throw e
+                }
             }
         }
     }
@@ -59,6 +73,7 @@ class CommandManager(
             register(ListCommandsCommand())
             register(BotCommand())
             register(TodoCommand(mirai))
+            register(PermissionCommand(mirai))
         }
     }
 

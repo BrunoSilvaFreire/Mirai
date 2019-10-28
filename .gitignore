@@ -45,3 +45,5 @@ fabric.properties
 *.rar
 hs_err_pid*
 build
+generated
+storage

@@ -1,7 +1,7 @@
 package me.ddevil.mirai.command
 
 import me.ddevil.mirai.Mirai
-import me.ddevil.mirai.kMiraiVersion
+import me.ddevil.mirai.MiraiConstants
 
 class VersionCommand : Command(
     "version",
@@ -10,7 +10,7 @@ class VersionCommand : Command(
 ) {
     override suspend fun execute(args: CommandArguments, sender: CommandSender, mirai: Mirai) {
         sender.reply {
-            raw(kMiraiVersion)
+            raw(MiraiConstants.version)
         }
     }
 }

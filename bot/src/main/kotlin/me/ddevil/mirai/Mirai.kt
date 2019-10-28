@@ -1,6 +1,7 @@
 package me.ddevil.mirai
 
 import me.ddevil.mirai.command.CommandManager
+import me.ddevil.mirai.permission.PermissionManager
 import me.ddevil.mirai.persistence.FilePersistenceFactory
 import me.ddevil.mirai.persistence.PersistenceManager
 import net.dv8tion.jda.api.JDA
@@ -9,7 +10,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
 
-const val kMiraiVersion = "v0.0.1-SNAPSHOT"
 
 class Mirai(
     token: String
@@ -22,6 +22,7 @@ class Mirai(
     val logger: Logger
     val persistenceManager: PersistenceManager
     val commandManager: CommandManager
+    val permissionManager: PermissionManager
 
     init {
         logger = LoggerFactory.getLogger(Mirai::class.java)
@@ -29,6 +30,7 @@ class Mirai(
         persistenceManager = PersistenceManager(
             factory = FilePersistenceFactory(File("storage"))
         )
+        permissionManager = PermissionManager(this)
         jda = JDABuilder()
             .setToken(token)
             .build()

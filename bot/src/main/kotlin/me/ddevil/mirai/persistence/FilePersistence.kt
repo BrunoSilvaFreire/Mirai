@@ -26,6 +26,9 @@ class FilePersistence(
     private fun load(file: File) = parser.parseObject(file)
 
     private fun save(file: File, obj: Serialized) {
+        if (!file.exists()) {
+            file.createNewFile()
+        }
         file.writeText(JsonObject(obj).toJson())
     }
 
@@ -34,7 +37,11 @@ class FilePersistence(
     }
 
     override suspend fun <K> get(key: K): Serialized? {
-        return load(File(directory, "$key.json"))
+        val file = File(directory, "$key.json")
+        if (!file.exists()) {
+            return null
+        }
+        return load(file)
     }
 
     override suspend fun <K> set(key: K, obj: Serialized) {

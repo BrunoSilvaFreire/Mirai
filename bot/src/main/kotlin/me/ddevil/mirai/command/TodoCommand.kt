@@ -40,7 +40,7 @@ class TodoCommand(mirai: Mirai) : ScopedCommand("todo", "Salva todos os itens qu
 
         }
         register("add") { args, sender, mirai ->
-            val parts = args.args
+            val parts = args.arguments
             if (parts.isEmpty()) {
                 sender.reply {
                     raw("Você deve descrever um item!")

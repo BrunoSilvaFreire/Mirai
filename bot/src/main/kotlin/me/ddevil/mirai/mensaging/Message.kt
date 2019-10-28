@@ -1,5 +1,7 @@
 package me.ddevil.mirai.mensaging
 
+import java.awt.Color
+
 interface MessageComponent {
     val content: String
 
@@ -15,8 +17,8 @@ class MarkdownComponent(
 ) : MessageComponent {
     override val content: String
         get() {
-            val msg =text
-            if(bold){
+            val msg = text
+            if (bold) {
             }
             return msg
         }
@@ -24,8 +26,15 @@ class MarkdownComponent(
 }
 
 class Message(
-    val components: MutableList<MessageComponent> = ArrayList()
+    val components: MutableList<MessageComponent> = ArrayList(),
+    var title: String? = null,
+    var color: Color? = null
+
 ) {
+    fun markError() {
+        color = Color.RED
+    }
+
     fun raw(text: String) {
         components += RawMessageComponent(text)
     }
@@ -35,6 +44,10 @@ class Message(
         bold: Boolean = false
     ) {
 
+    }
+
+    fun isRich(): Boolean {
+        return title != null || color != null
     }
 
     val content

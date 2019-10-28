@@ -1,5 +1,7 @@
 package me.ddevil.mirai
 
+import me.ddevil.util.emptyString
+
 
 data class Scope<M>(
     val name: String,
@@ -8,6 +10,7 @@ data class Scope<M>(
 ) {
     companion object {
         fun getParts(scope: String) = scope.split('.')
+        fun <M> root(): Scope<M> = Scope(emptyString())
     }
 
     fun findDirectChild(name: String) = children.firstOrNull {

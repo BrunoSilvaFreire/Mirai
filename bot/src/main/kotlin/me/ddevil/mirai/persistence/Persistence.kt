@@ -10,6 +10,7 @@ interface Persistence {
     suspend fun all(): List<Serialized>
     suspend fun <K> get(key: K): Serialized?
     suspend fun <K> set(key: K, obj: Serialized)
+    suspend fun <K> delete(key: K): Boolean
 }
 
 suspend fun <K> Persistence.set(key: K, builder: HashMap<String, Any?>.() -> Unit) {

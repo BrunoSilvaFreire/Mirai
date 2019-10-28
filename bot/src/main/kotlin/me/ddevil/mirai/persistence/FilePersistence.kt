@@ -22,6 +22,15 @@ class FilePersistenceFactory(
 class FilePersistence(
     val directory: File
 ) : Persistence {
+    override suspend fun <K> delete(key: K): Boolean {
+        val file = File(directory, "$key.json")
+        if (!file.exists()) {
+            return false
+        }
+        file.delete()
+        return true
+    }
+
     val parser = JsonParser()
     private fun load(file: File) = parser.parseObject(file)
 

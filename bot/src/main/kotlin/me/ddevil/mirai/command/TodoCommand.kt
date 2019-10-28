@@ -3,7 +3,9 @@ package me.ddevil.mirai.command
 import com.google.common.hash.Hashing
 import me.ddevil.mirai.Mirai
 import me.ddevil.mirai.persistence.set
+import me.ddevil.util.exception.ArgumentOutOfRangeException
 import me.ddevil.util.getString
+import java.awt.Color
 import javax.crypto.Cipher
 
 
@@ -32,7 +34,7 @@ class TodoCommand(mirai: Mirai) : ScopedCommand("todo", "Salva todos os itens qu
                     raw("Sem TODO's")
                 } else {
                     for ((index, item) in items.withIndex()) {
-                        raw("**TODO: '$item'**")
+                        raw("**TODO: '${item.content}'**")
                         raw(item.hash)
                     }
                 }
@@ -60,11 +62,37 @@ class TodoCommand(mirai: Mirai) : ScopedCommand("todo", "Salva todos os itens qu
             items.add(todo)
             sender.reply {
                 raw("Adicionado TODO:")
-                raw("TODO: '$todo'")
+                raw("TODO: '${todo.content}'")
             }
         }
         register("remove") { args, sender, mirai ->
-
+            try {
+                val hash = args.getString(0)
+                if (
+                    items.removeAll {
+                        it.hash == hash
+                    }
+                ) {
+                    persistence.delete(hash)
+                    sender.reply {
+                        color = Color.CYAN
+                        title = "TODO(s) removidos"
+                        raw("TODO(s) com hash **$hash** removido(s)")
+                    }
+                } else {
+                    sender.reply {
+                        markError()
+                        title = "TODO não encontrado"
+                        raw("Não existe um TODO com a hash **$hash**")
+                    }
+                }
+            } catch (e: ArgumentOutOfRangeException) {
+                sender.reply {
+                    markError()
+                    title = "Hash não encontrada"
+                    raw("Você precisa informar uma hash!")
+                }
+            }
         }
     }
 }

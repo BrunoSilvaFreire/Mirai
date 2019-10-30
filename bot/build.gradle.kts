@@ -18,9 +18,9 @@ plugins {
     application
 }
 dependencies {
-
+    api("com.github.ajalt:clikt:2.2.0")
     api(kotlin("stdlib-jdk8"))
-    api("me.ddevil:json:1.2.0-SNAPSHOT")
+    api("me.ddevil:json:1.2.1")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.2")
     api("net.dv8tion:JDA:4.0.0_54") {
         exclude(module = "opus-java")

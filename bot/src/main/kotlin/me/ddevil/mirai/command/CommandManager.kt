@@ -12,16 +12,17 @@ import java.lang.Exception
 class CommandManager(
     val mirai: Mirai
 ) : EventListener {
+
     val logger = LoggerFactory.getLogger(CommandArguments::class.java)
     override fun onEvent(event: GenericEvent) {
         if (event is MessageReceivedEvent) {
             val m = event.member ?: return
             val ch = event.channel
             val msg = event.message
-            if (!msg.contentDisplay.startsWith('!')) {
+            if (!msg.contentDisplay.startsWith(mirai.commandPrefix)) {
                 return
             }
-            val content = msg.contentDisplay.removePrefix("!").split(' ')
+            val content = msg.contentDisplay.removePrefix(mirai.commandPrefix).split(' ')
             if (content.isEmpty()) {
                 return
             }

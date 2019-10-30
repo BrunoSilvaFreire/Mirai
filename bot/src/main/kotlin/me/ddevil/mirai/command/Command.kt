@@ -5,6 +5,7 @@ import me.ddevil.mirai.*
 import me.ddevil.mirai.mensaging.Message
 import me.ddevil.util.emptyString
 import me.ddevil.util.exception.ArgumentOutOfRangeException
+import me.ddevil.util.getResource
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member

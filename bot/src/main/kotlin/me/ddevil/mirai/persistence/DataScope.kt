@@ -2,22 +2,21 @@ package me.ddevil.mirai.persistence
 
 import me.ddevil.mirai.Scope
 import me.ddevil.mirai.hashMap
-import me.ddevil.mirai.permission.Grant
 import me.ddevil.util.*
 
 
-interface Persistence {
+interface DataScope {
     suspend fun all(): List<Serialized>
     suspend fun <K> get(key: K): Serialized?
     suspend fun <K> set(key: K, obj: Serialized)
     suspend fun <K> delete(key: K): Boolean
 }
 
-suspend fun <K> Persistence.set(key: K, builder: HashMap<String, Any?>.() -> Unit) {
+suspend fun <K> DataScope.set(key: K, builder: HashMap<String, Any?>.() -> Unit) {
     set(key, hashMap(builder))
 }
 
-suspend fun <K, M> Persistence.setScope(key: K, scope: Scope<M>, transform: ((M) -> Any)? = null) {
+suspend fun <K, M> DataScope.setScope(key: K, scope: Scope<M>, transform: ((M) -> Any)? = null) {
     fun transform(scope: Scope<M>): Serialized {
         val hashMap = HashMap<String, Any?>()
         val meta = scope.meta
@@ -37,7 +36,7 @@ suspend fun <K, M> Persistence.setScope(key: K, scope: Scope<M>, transform: ((M)
     }
 }
 
-suspend fun <K, M> Persistence.setSerializableScope(key: K, scope: Scope<M>) where M : Serializable =
+suspend fun <K, M> DataScope.setSerializableScope(key: K, scope: Scope<M>) where M : Serializable =
     setScope(key, scope) {
         return@setScope it.serialize()
     }

@@ -1,7 +1,9 @@
 package me.ddevil.mirai.plugins
 
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import me.ddevil.json.parse.JsonParser
+import me.ddevil.mirai.Mirai
+import java.io.InputStream
+import java.util.logging.Logger
 
 data class PluginDescriptor(
     val group: String,
@@ -10,17 +12,36 @@ data class PluginDescriptor(
     val main: String
 ) {
     val identifier get() = "${group}.${name}"
+
+    companion object {
+        fun from(stream: InputStream): PluginDescriptor {
+            val json = JsonParser().parseObject(stream)
+            return PluginDescriptor(
+                json.getString("group"),
+                json.getString("name"),
+                json.getString("version"),
+                json.getString("main")
+            )
+        }
+    }
 }
 
 abstract class Plugin {
     lateinit var pluginDescriptor: PluginDescriptor
         private set
     lateinit var logger: Logger
+    lateinit var mirai: Mirai
+        private set
+
     fun initialize(
-        pluginDescriptor: PluginDescriptor
+        pluginDescriptor: PluginDescriptor,
+        mirai: Mirai
     ) {
         this.pluginDescriptor = pluginDescriptor
-        logger = LoggerFactory.getLogger(pluginDescriptor.identifier)
-
+        logger = Logger.getLogger(pluginDescriptor.identifier)
+        this.mirai = mirai
+        bootstrap()
     }
+
+    open fun bootstrap() {}
 }

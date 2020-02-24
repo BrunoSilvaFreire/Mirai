@@ -4,17 +4,17 @@ import me.ddevil.mirai.Scope
 import me.ddevil.util.emptyString
 
 interface PersistenceFactory {
-    fun create(scope: Scope<Persistence>, parts: List<String>): Persistence
+    fun create(scope: Scope<DataScope>, parts: List<String>): DataScope
 }
 
 
 class PersistenceManager(
     val factory: PersistenceFactory
 ) {
-    val rootScope = Scope<Persistence>(emptyString())
+    val rootScope = Scope<DataScope>(emptyString())
 
 
-    fun request(scope: String): Persistence {
+    fun request(scope: String): DataScope {
         val found = rootScope.findChild(scope)
         var m = found.meta
         if (m == null) {

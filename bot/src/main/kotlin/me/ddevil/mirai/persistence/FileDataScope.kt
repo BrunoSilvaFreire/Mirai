@@ -9,19 +9,19 @@ import java.io.File
 class FilePersistenceFactory(
     val root: File
 ) : PersistenceFactory {
-    override fun create(scope: Scope<Persistence>, parts: List<String>): Persistence {
+    override fun create(scope: Scope<DataScope>, parts: List<String>): DataScope {
         val directory = File(root, parts.joinToString(separator = "/"))
         if (!directory.exists()) {
             directory.mkdirs()
         }
-        return FilePersistence(directory)
+        return FileDataScope(directory)
     }
 
 }
 
-class FilePersistence(
+class FileDataScope(
     val directory: File
-) : Persistence {
+) : DataScope {
     override suspend fun <K> delete(key: K): Boolean {
         val file = File(directory, "$key.json")
         if (!file.exists()) {

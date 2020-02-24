@@ -1,0 +1,6 @@
+{
+  "group": "me.ddevil.mirai",
+  "name": "github",
+  "version": "1.0.0",
+  "main": "me.ddevil.mirai.github.GitHubPlugin"
+}

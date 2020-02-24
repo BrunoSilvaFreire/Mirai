@@ -1,9 +1,8 @@
 package me.ddevil.mirai.permission
 
-import kotlinx.coroutines.awaitAll
 import me.ddevil.mirai.Mirai
 import me.ddevil.mirai.Scope
-import me.ddevil.mirai.persistence.Persistence
+import me.ddevil.mirai.persistence.DataScope
 import me.ddevil.mirai.persistence.loadScope
 import me.ddevil.mirai.persistence.setScope
 import net.dv8tion.jda.api.entities.Role
@@ -13,7 +12,7 @@ class PermissionGroup
 private constructor(
     val root: Scope<Grant>,
     val role: Role,
-    val persistence: Persistence
+    val persistence: DataScope
 ) {
 
     companion object {

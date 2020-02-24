@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.internal.entities.EntityBuilder
+import kotlin.reflect.KProperty
 
 class CommandArguments
 constructor(
@@ -26,6 +27,19 @@ constructor(
     fun getString(index: Int): String {
         checkOutOfRange(index)
         return arguments[index]
+    }
+
+    fun hasFlag(flag: String): Boolean {
+        for (argument in arguments) {
+            if (argument.startsWith("--")) {
+                val a = argument.substring(2)
+                if (!a.equals(flag, true)) {
+                    continue
+                }
+                return true
+            }
+        }
+        return false
     }
 
     private fun checkOutOfRange(index: Int) {
@@ -53,6 +67,11 @@ constructor(
     fun isOutOfRange(index: Int) = index < 0 || index >= length
     fun getDouble(i: Int): Double {
         return getString(i).toDouble()
+    }
+
+    operator fun getValue(nothing: Nothing?, property: KProperty<*>): Boolean {
+        return hasFlag(property.name)
+
     }
 }
 
@@ -91,6 +110,7 @@ abstract class Command(
     val name: String,
     val description: String,
     val usage: String,
+    val owner: CommandOwner,
     vararg aliases: String
 ) : AbstractToggleable() {
     val aliases = aliases.toSet()
@@ -145,8 +165,9 @@ open class ScopedCommand(
     name: String,
     description: String,
     usage: String,
+    owner: CommandOwner,
     vararg aliases: String
-) : Command(name, description, usage, *aliases) {
+) : Command(name, description, usage, owner, *aliases) {
     val rootScope = Scope<SubCommand>(emptyString())
     fun register(subName: String, dispatcher: SubCommand) {
         rootScope.findChild(subName).meta = dispatcher

@@ -11,7 +11,7 @@ import java.lang.Exception
 
 class CommandManager(
     val mirai: Mirai
-) : EventListener {
+) : EventListener, CommandOwner {
 
     val logger = LoggerFactory.getLogger(CommandArguments::class.java)
     override fun onEvent(event: GenericEvent) {
@@ -69,9 +69,10 @@ class CommandManager(
         mirai.jda.addEventListener(this)
         GlobalScope.launch {
             logger.info("Registering built in commands")
-            register(VersionCommand())
-            register(ListCommandsCommand())
-            register(BotCommand())
+            register(VersionCommand(mirai))
+            register(ListCommandsCommand(this@CommandManager))
+            register(BotCommand(mirai))
+            register(PluginCommand(mirai.pluginManager))
             register(TodoCommand(mirai))
             register(PermissionCommand(mirai))
         }
@@ -86,4 +87,7 @@ class CommandManager(
         commands -= command
         command.terminate()
     }
+
+    override val prefix: String
+        get() = "mirai.command_manager"
 }

@@ -12,8 +12,11 @@ class PermissionCommand(val mirai: Mirai) :
         "permissions",
         "Muda permissões de roles",
         "/perms (set, remove, list)",
+        mirai,
         "perms"
+
     ) {
+    //O cara de bigode é mt chato
 
 
     private fun Message.addRoles(sender: CommandSender) {

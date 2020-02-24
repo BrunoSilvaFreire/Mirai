@@ -9,7 +9,7 @@ import java.awt.Color
 import javax.crypto.Cipher
 
 
-class TodoCommand(mirai: Mirai) : ScopedCommand("todo", "Salva todos os itens que devem", "asd") {
+class TodoCommand(mirai: Mirai) : ScopedCommand("todo", "Salva todos os itens que devem", "asd", mirai) {
     val persistence = mirai.persistenceManager.request("cmd.todo")
     val items = ArrayList<Todo>()
 

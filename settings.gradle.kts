@@ -1,1 +1,1 @@
-include(":bot")
+include(":bot", ":github")

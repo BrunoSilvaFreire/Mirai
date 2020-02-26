@@ -34,7 +34,10 @@ application {
 
 repositories {
     jcenter()
-    mavenLocal()
+    maven {
+        name = "lunari"
+        url = uri("https://repo.lunari.studio/repository/maven-public/")
+    }
 }
 sourceSets {
     main {

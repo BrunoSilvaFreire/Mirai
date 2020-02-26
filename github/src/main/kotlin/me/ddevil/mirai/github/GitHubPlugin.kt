@@ -18,7 +18,7 @@ class GitHubPlugin : Plugin() {
         logger.info("Hooked into persistence scope ($persistence)")
         runBlocking {
             coroutineScope {
-                val token = pluginConfig.get("credentials")
+                val token = pluginConfig.json.getStringOrNull("credentials")
                 if (token == null) {
                     logger.warning("GitHub plugin found no credentials in config. Plugin won't do anything.")
                     return@coroutineScope

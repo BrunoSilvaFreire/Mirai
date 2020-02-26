@@ -108,13 +108,17 @@ if (botsFile.exists()) {
     val botTasks = ArrayList<JavaExec>()
     val classPath = sourceSets.main.get().runtimeClasspath
     for (bot in bots) {
+        val botDir = File(rootProject.buildDir, "runtime/${bot.botId}")
+        val cleanTask = rootProject.tasks.create<Delete>("cleanBot-${bot.botId}") {
+            group = "mirai"
+            delete(File(botDir, "plugins"))
+        }
 
         botTasks += rootProject.tasks.create<JavaExec>("runBot-${bot.botId}") {
             group = "mirai"
             main = "me.ddevil.mirai.MainKt"
-            workingDir(
-                File(rootProject.buildDir, "runtime/${bot.botId}")
-            )
+            dependsOn(cleanTask)
+            workingDir(botDir)
             classpath(classPath)
             args(
                 "--command-prefix=${bot.commandPrefix ?: '?'}",

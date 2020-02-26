@@ -1,3 +1,5 @@
+import me.ddevil.mirai.gradle.addPluginToBotsTasks
+
 plugins {
     kotlin("jvm")
 }
@@ -10,3 +12,4 @@ repositories {
     jcenter()
     mavenLocal()
 }
+addPluginToBotsTasks()

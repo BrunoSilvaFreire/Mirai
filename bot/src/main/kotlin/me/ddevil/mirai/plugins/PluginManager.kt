@@ -1,7 +1,8 @@
 package me.ddevil.mirai.plugins
 
 import me.ddevil.mirai.Mirai
-import me.ddevil.mirai.command.CommandOwner
+import me.ddevil.mirai.command.DebugCommand
+import me.ddevil.mirai.command.Prefixed
 import java.io.File
 import java.net.URL
 import java.net.URLClassLoader
@@ -12,7 +13,7 @@ import java.util.logging.Logger
 class PluginManager(
     val mirai: Mirai,
     val directory: File
-) : CommandOwner {
+) : Prefixed {
     private val loadedPlugins = ArrayList<Plugin>()
 
     val plugins: Set<Plugin>
@@ -23,7 +24,16 @@ class PluginManager(
     }
 
     init {
-
+        mirai.whenCommandManagerAvailable {
+            withCommandOf<DebugCommand> {
+                register(this@PluginManager) {
+                    raw("Total of ${plugins.size} plugins loaded.")
+                    for (plugin in plugins) {
+                        markdown(plugin.pluginDescriptor.identifier, italic = true)
+                    }
+                }
+            }
+        }
         logger.info("Searching for plugins in ${directory.absolutePath}")
         val files = directory.listFiles { file, name ->
             name.endsWith("jar")

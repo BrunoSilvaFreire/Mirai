@@ -1,5 +1,5 @@
 package me.ddevil.mirai.command
 
-interface CommandOwner {
+interface Prefixed {
     val prefix: String
 }

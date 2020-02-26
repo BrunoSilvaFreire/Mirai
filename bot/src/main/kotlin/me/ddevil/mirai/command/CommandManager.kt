@@ -2,6 +2,7 @@ package me.ddevil.mirai.command
 
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import me.ddevil.mirai.Mirai
 import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -11,7 +12,7 @@ import java.lang.Exception
 
 class CommandManager(
     val mirai: Mirai
-) : EventListener, CommandOwner {
+) : EventListener, Prefixed {
 
     val logger = LoggerFactory.getLogger(CommandArguments::class.java)
     override fun onEvent(event: GenericEvent) {
@@ -34,7 +35,7 @@ class CommandManager(
                 content.slice(1 until content.size).toTypedArray()
             }
             GlobalScope.launch {
-                val sender = UserSender(m, ch)
+                val sender = MemberSender(m, ch)
                 try {
                     cmd.execute(
                         CommandArguments(args),
@@ -67,7 +68,7 @@ class CommandManager(
         logger.info("Hooking command manager")
 
         mirai.jda.addEventListener(this)
-        GlobalScope.launch {
+        runBlocking {
             logger.info("Registering built in commands")
             register(VersionCommand(mirai))
             register(ListCommandsCommand(this@CommandManager))
@@ -75,6 +76,18 @@ class CommandManager(
             register(PluginCommand(mirai.pluginManager))
             register(TodoCommand(mirai))
             register(PermissionCommand(mirai))
+            register(DebugCommand(mirai))
+        }
+        withCommandOf<DebugCommand> {
+            register(this@CommandManager) {
+                raw("Total of ${commands.size} commands loaded.")
+                for (cmd in commands) {
+                    markdown(cmd.name, italic = true)
+                    raw("Permission: ${cmd.permission}")
+                    raw("Owner: ${cmd.owner.prefix} *(${cmd.owner::class.java.name})*")
+                    separator()
+                }
+            }
         }
     }
 
@@ -86,6 +99,14 @@ class CommandManager(
     suspend fun deregister(command: Command) {
         commands -= command
         command.terminate()
+    }
+
+    inline fun <reified T : Command> withCommandOf(function: T.() -> Unit) {
+        for (command in commands) {
+            if (command is T) {
+                command.function()
+            }
+        }
     }
 
     override val prefix: String

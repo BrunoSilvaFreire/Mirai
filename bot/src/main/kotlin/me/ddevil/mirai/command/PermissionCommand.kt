@@ -22,7 +22,7 @@ class PermissionCommand(val mirai: Mirai) :
     private fun Message.addRoles(sender: CommandSender) {
         this.title = "Roles & Códigos"
         var roles = mirai.jda.roles
-        if (sender is UserSender) {
+        if (sender is MemberSender) {
             val ch = sender.channel
             if (ch is TextChannel) {
                 roles = roles.filter { it.guild == ch.guild }

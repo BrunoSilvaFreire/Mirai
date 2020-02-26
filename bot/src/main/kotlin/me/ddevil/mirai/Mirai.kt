@@ -4,7 +4,7 @@ import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.option
 import me.ddevil.mirai.command.CommandManager
-import me.ddevil.mirai.command.CommandOwner
+import me.ddevil.mirai.command.Prefixed
 import me.ddevil.mirai.configuration.ConfigurationManager
 import me.ddevil.mirai.permission.PermissionManager
 import me.ddevil.mirai.persistence.FilePersistenceFactory
@@ -12,15 +12,30 @@ import me.ddevil.mirai.persistence.PersistenceManager
 import me.ddevil.mirai.plugins.PluginManager
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.io.File
+import java.util.logging.Logger
 
+typealias WhenAvailable<T> = T.() -> Unit
 
-class Mirai : CliktCommand(), CommandOwner {
+class WhenAvailableEvent<T> {
+    private val listeners = ArrayList<WhenAvailable<T>>()
+    operator fun invoke(value: T) {
+        for (listener in listeners) {
+            listener(value)
+        }
+    }
+
+    operator fun invoke(value: WhenAvailable<T>) {
+        listeners += value
+    }
+
+}
+
+class Mirai : CliktCommand(), Prefixed {
     val token by option(help = "The token to use for the bot")
     val commandPrefix by option(help = "Prefix used for commands").default("!")
     lateinit var configurationManager: ConfigurationManager
+
     override fun run() {
         logger.info("Connecting with token '$token'")
         jda = JDABuilder()
@@ -32,14 +47,19 @@ class Mirai : CliktCommand(), CommandOwner {
         )
         permissionManager = PermissionManager(this)
 
-        commandManager = CommandManager(this)
         val configFile = File("config.json")
         logger.info("Using config file '${configFile.absolutePath}'")
         configurationManager = ConfigurationManager(configFile)
         pluginManager = PluginManager(this, File("plugins"))
+        whenPluginManagerAvailable.invoke(pluginManager)
+        commandManager = CommandManager(this)
+        whenCommandManagerAvailable.invoke(commandManager)
+        logger.info("Prefix is: $commandPrefix")
     }
 
-    val logger = LoggerFactory.getLogger(Mirai::class.java)
+    val logger = Logger.getLogger("mirai")
+    val whenCommandManagerAvailable = WhenAvailableEvent<CommandManager>()
+    val whenPluginManagerAvailable = WhenAvailableEvent<PluginManager>()
     lateinit var jda: JDA
     lateinit var persistenceManager: PersistenceManager
     lateinit var commandManager: CommandManager
@@ -48,4 +68,5 @@ class Mirai : CliktCommand(), CommandOwner {
     override val prefix: String
         get() = "mirai"
 
+    override fun toString() = prefix
 }

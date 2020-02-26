@@ -1,17 +1,14 @@
 package me.ddevil.mirai.command
 
-import com.google.common.base.Strings
 import me.ddevil.mirai.*
 import me.ddevil.mirai.mensaging.Message
 import me.ddevil.util.emptyString
 import me.ddevil.util.exception.ArgumentOutOfRangeException
-import me.ddevil.util.getResource
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.MessageChannel
-import net.dv8tion.jda.api.entities.MessageEmbed
-import net.dv8tion.jda.internal.entities.EntityBuilder
+import net.dv8tion.jda.api.entities.TextChannel
 import kotlin.reflect.KProperty
 
 class CommandArguments
@@ -80,8 +77,7 @@ interface CommandSender {
 
 }
 
-class UserSender(
-    val user: Member,
+open class TextSender(
     val channel: MessageChannel
 ) : CommandSender {
     override fun reply(builder: Message.() -> Unit) {
@@ -103,14 +99,18 @@ class UserSender(
         }
 
     }
-
 }
+
+class MemberSender(
+    val member: Member,
+    channel: MessageChannel
+) : TextSender(channel)
 
 abstract class Command(
     val name: String,
     val description: String,
     val usage: String,
-    val owner: CommandOwner,
+    val owner: Prefixed,
     vararg aliases: String
 ) : AbstractToggleable() {
     val aliases = aliases.toSet()
@@ -139,8 +139,8 @@ abstract class Command(
     }
 
     suspend fun allowed(sender: CommandSender, mirai: Mirai): Boolean {
-        if (sender is UserSender) {
-            val r = sender.user.roles
+        if (sender is MemberSender) {
+            val r = sender.member.roles
             if (r.any { Permission.ADMINISTRATOR in it.permissions }) {
                 return true
             }
@@ -165,7 +165,7 @@ open class ScopedCommand(
     name: String,
     description: String,
     usage: String,
-    owner: CommandOwner,
+    owner: Prefixed,
     vararg aliases: String
 ) : Command(name, description, usage, owner, *aliases) {
     val rootScope = Scope<SubCommand>(emptyString())

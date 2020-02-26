@@ -1,5 +1,6 @@
 package me.ddevil.mirai.mensaging
 
+import com.google.common.base.Strings
 import java.awt.Color
 
 interface MessageComponent {
@@ -31,6 +32,10 @@ class Message(
     var color: Color? = null
 
 ) {
+    fun separator() {
+        raw("")
+    }
+
     fun markError() {
         color = Color.RED
     }
@@ -48,7 +53,7 @@ class Message(
         if (bold) {
             msg = "**$msg**"
         }
-        if (italic){
+        if (italic) {
             msg = "*$msg*"
         }
         raw(msg)

@@ -40,13 +40,14 @@ class BotCommand(
     "Envia uma mensagem de informação",
     "/bot",
     mirai,
-    "mirai"
+    "mirai", "help"
 
 ) {
     override suspend fun onExecute(args: CommandArguments, sender: CommandSender, mirai: Mirai) {
         sender.reply {
             raw("Eu sou a Mirai!")
             raw("Eu que gerêncio o role pra não virar zorra")
+            raw("Veja os comandos usando **/commands**")
             raw(
                 "Caso queira adicionar alguma funcionalidade, contribua em: " +
                         "https://github.com/BrunoSilvaFreire/Mirai"
@@ -72,7 +73,7 @@ class PluginCommand(
                 with(plugin.pluginDescriptor) {
                     markdown("#$i: ${this.name} v${this.version}", bold = true)
                     markdown("(${this.identifier})", italic = true)
-                    if (verbose && plugin is CommandOwner) {
+                    if (verbose && plugin is Prefixed) {
                         for (command in mirai.commandManager.commands) {
                             if (command.owner != plugin) {
                                 continue

@@ -1,4 +1,4 @@
-include(":bot", ":github")
+include(":bot", ":github", ":twitter")
 
 pluginManagement {
     plugins {

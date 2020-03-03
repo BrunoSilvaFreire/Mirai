@@ -32,13 +32,6 @@ application {
     mainClassName = "me.ddevil.mirai.MainKt"
 }
 
-repositories {
-    jcenter()
-    maven {
-        name = "lunari"
-        url = uri("https://repo.lunari.studio/repository/maven-public/")
-    }
-}
 sourceSets {
     main {
         java {

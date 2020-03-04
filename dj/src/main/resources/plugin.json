@@ -1,0 +1,6 @@
+{
+  "group": "me.zortex.mirai",
+  "name": "dj",
+  "version": "1.0.0",
+  "main": "me.zortex.mirai.dj.DJ"
+}

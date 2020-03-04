@@ -1,7 +1,7 @@
-include(":bot", ":github", ":twitter")
+include(":bot", ":github", ":twitter", ":dj")
 
 pluginManagement {
     plugins {
-        kotlin("jvm") version "1.3.61"
+        kotlin("jvm") version "1.3.70"
     }
 }
